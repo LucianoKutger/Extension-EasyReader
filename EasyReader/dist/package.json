@@ -1,0 +1,38 @@
+{
+  "name": "EasyReader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "license": "AGPL-version-3.0",
+  "private": false,
+  "engines": {
+    "node": ">= 14.0.0",
+    "npm": ">= 6.0.0"
+  },
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "keywords": [],
+  "author": {
+    "name": "",
+    "email": "",
+    "url": ""
+  },
+  "contributors": [],
+  "scripts": {
+    "dev": "",
+    "test": "",
+    "clean": "rmdir /s /q .\\EasyReader\\dist",
+    "compile": "npx tsc",
+    "copy-assets": "robocopy . EasyReader\\dist /E /XD EasyReader\\src dist scripts /XF tsconfig.json || exit 0",
+    "build": "npm run clean && npm run compile && npm run copy-assets"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.317",
+    "typescript": "^5.8.3"
+  }
+}
