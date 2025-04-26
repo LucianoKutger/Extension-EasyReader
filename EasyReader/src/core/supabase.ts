@@ -12,28 +12,39 @@ if(!SUPABASE_KEY || !SUPABASE_URL){
 
 const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_KEY)
 
-async function checkForTranslation(hash: string ,mode:string ):Promise<string>{
-    const { data, error } = await supabase
-    .from('translations')
-    .select('translation')
-    .eq('hash', hash)
-    .eq('mode', mode)
-
-    if(data){
-        if(data.length == 0){
-            console.log("no match")
-            return "no match"
-        }else{
-            console.log(data[0].translation)
-            return data[0].translation
+async function checkForTranslation(hash: string ,mode:string ):Promise<string | boolean>{
+    try{
+        const { data, error} = await supabase
+        .from('translations')
+        .select('translation')
+        .eq('hash', hash)
+        .eq('mode', mode)
+        
+        if(data){
+            if(data.length == 0){
+                return false
+            }else{
+                return data[0].translation
+            }
+        }else if(error){
+            throw new Error(error.code)
         }
-    }else if(error){
-        throw new Error(error.code)
-    }else{
-        return "weder noch"
-    }
 
+    }catch(e){
+        throw e
+    }
+    
+    return false
 }
 
+async function postTranslation(hash:string, mode:string, translation:string):Promise<boolean> {
+    try{
+        await supabase
+        .from('translations')
+        .insert({hash: hash, mode:mode, translation:translation})
 
-checkForTranslation("h","leicht")
+        return true
+    }catch(e){
+        throw e
+    }
+}
