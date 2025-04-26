@@ -1,0 +1,47 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build-Output (Dist Ordner)
+EasyReader/dist/
+EasyReader/public/
+
+# TS-Output (falls außerhalb dist generiert)
+*.js
+*.js.map
+*.d.ts
+
+# VSCode
+.vscode/
+
+# Systemdateien
+.DS_Store
+Thumbs.db
+
+# Env-Dateien (API-Keys usw.)
+*.env
+*.env.local
+*.env.production
+*.env.development
+
+# Logs
+logs/
+*.log
+
+# Proxy-Server Output (falls später eigenes Build-System)
+proxy-server/dist/
+proxy-server/node_modules/
+
+# Coverage/Test Output
+coverage/
+
+# Optional: temporäre Editoren-Dateien
+*.swp
+*.swo
+
+# Optional: Build-Cache für Vite, Webpack etc.
+.cache/
+.cache-loader/
