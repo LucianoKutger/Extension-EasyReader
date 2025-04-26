@@ -7,7 +7,7 @@ pnpm-debug.log*
 
 # Build-Output (Dist Ordner)
 EasyReader/dist/
-proxy-server/dist/
+EasyReader/proxy-server/dist/
 
 # Environment Files
 .env
