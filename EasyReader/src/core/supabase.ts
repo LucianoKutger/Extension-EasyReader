@@ -12,39 +12,37 @@ if(!SUPABASE_KEY || !SUPABASE_URL){
 
 const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_KEY)
 
-async function checkForTranslation(hash: string ,mode:string ):Promise<string | boolean>{
-    try{
+async function checkForTranslationinSupabase(hash: string ,mode:string ):Promise<string | boolean>{
+    return new Promise(async (resolve) => {
         const { data, error} = await supabase
-        .from('translations')
-        .select('translation')
-        .eq('hash', hash)
-        .eq('mode', mode)
-        
-        if(data){
-            if(data.length == 0){
-                return false
-            }else{
-                return data[0].translation
-            }
-        }else if(error){
-            throw new Error(error.code)
-        }
+            .from('translations') 
+            .select('translation')
+            .eq('hash', hash)
+            .eq('mode', mode)
 
-    }catch(e){
-        throw e
-    }
-    
-    return false
+            if(data){
+                if(data.length == 0){
+                    resolve(false)
+                }else{
+                    resolve(data[0].translation) 
+                }
+            }else if(error){
+                throw new Error(error.code)
+            }
+    })        
 }
 
-async function postTranslation(hash:string, mode:string, translation:string):Promise<boolean> {
-    try{
-        await supabase
+async function postTranslation(hash:string, mode:string, translation:string):Promise<string> {
+    return new Promise(async (resolve) => {
+        const {data, error} = await supabase
         .from('translations')
         .insert({hash: hash, mode:mode, translation:translation})
 
-        return true
-    }catch(e){
-        throw e
-    }
+        if(data){
+            resolve(data['status'])
+        }else if(error){
+            resolve(error.details)
+        }
+
+    })
 }
