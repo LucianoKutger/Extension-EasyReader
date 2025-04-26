@@ -63,7 +63,7 @@
 
 ## 5. **Technikübersicht**
 
-## 5.1 **Projektarchitektur (Empfohlene Ordnerstruktur)**
+## 5.1 **Projektarchitektur**
 
 ```
 chrome-translate-extension/
@@ -111,7 +111,7 @@ chrome-translate-extension/
 
 - **Backend**:
 
-  - Supabase (Datenbank + Auth + optional Functions)
+  - Supabase (Datenbank)
   - Node.js-Proxy-Server (für API-Request)
 
 - **Weitere Tools**:

@@ -7,41 +7,30 @@ pnpm-debug.log*
 
 # Build-Output (Dist Ordner)
 EasyReader/dist/
-EasyReader/public/
+proxy-server/dist/
 
-# TS-Output (falls außerhalb dist generiert)
-*.js
-*.js.map
-*.d.ts
+# Environment Files
+.env
+.env.local
+.env.production
+.env.development
+EasyReader/.env
+EasyReader/proxy-server/.env
 
-# VSCode
+# VSCode Settings
 .vscode/
 
 # Systemdateien
 .DS_Store
 Thumbs.db
 
-# Env-Dateien (API-Keys usw.)
-*.env
-*.env.local
-*.env.production
-*.env.development
-
 # Logs
 logs/
 *.log
 
-# Proxy-Server Output (falls später eigenes Build-System)
-proxy-server/dist/
-proxy-server/node_modules/
-
-# Coverage/Test Output
+# Coverage / Test Outputs
 coverage/
 
-# Optional: temporäre Editoren-Dateien
-*.swp
-*.swo
-
-# Optional: Build-Cache für Vite, Webpack etc.
+# Build Cache (Vite/Webpack etc.)
 .cache/
 .cache-loader/
