@@ -1,6 +1,6 @@
 import {createHash} from 'crypto'
 
-function hashString(text: string): string{
+export function hashString(text: string): string{
     return createHash('sha256').update(text).digest('hex')
 }
 
