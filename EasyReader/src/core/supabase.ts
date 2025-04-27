@@ -12,7 +12,7 @@ if(!SUPABASE_KEY || !SUPABASE_URL){
 
 const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_KEY)
 
-async function checkForTranslationinSupabase(hash: string ,mode:string ):Promise<string | boolean>{
+export async function checkForTranslationinSupabase(hash: string ,mode:string ):Promise<string | null>{
     return new Promise(async (resolve) => {
         const { data, error} = await supabase
             .from('translations') 
@@ -22,7 +22,7 @@ async function checkForTranslationinSupabase(hash: string ,mode:string ):Promise
 
             if(data){
                 if(data.length == 0){
-                    resolve(false)
+                    resolve(null)
                 }else{
                     resolve(data[0].translation) 
                 }
@@ -32,7 +32,7 @@ async function checkForTranslationinSupabase(hash: string ,mode:string ):Promise
     })        
 }
 
-async function postTranslation(hash:string, mode:string, translation:string):Promise<string> {
+export async function postTranslation(hash:string, mode:string, translation:string):Promise<string> {
     return new Promise(async (resolve) => {
         const {data, error} = await supabase
         .from('translations')
