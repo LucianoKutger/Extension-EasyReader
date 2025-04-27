@@ -28,8 +28,9 @@
     "test": "",
     "clean": "rmdir /s /q .\\EasyReader\\dist",
     "compile": "npx tsc",
-    "copy-assets": "robocopy . EasyReader\\dist /E /XD EasyReader\\src dist scripts /XF tsconfig.json || exit 0",
-    "build": "npm run clean && npm run compile && npm run copy-assets"
+    "fix-exports": "npx tsx helper/remove-exports",
+    "copy-assets": "robocopy . EasyReader\\dist /E /XD EasyReader\\src dist scripts helper proxy-server/XF tsconfig.json || exit 0",
+    "build": "npm run clean && npm run compile && npm run copy-assets && npm run fix-exports"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.317",
