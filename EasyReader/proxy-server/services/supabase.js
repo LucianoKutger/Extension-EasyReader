@@ -19,9 +19,9 @@ async function checkForTranslationinSupabase(hash, mode){
             .eq('mode', mode)
 
             if(error){
-                //throw new Error(error.code)
-                console.error(error.message)
-                return null
+                console.error('Fehler: ',error)
+                throw new Error(error)
+             
             }
 
             if(data){
@@ -45,8 +45,8 @@ async function postTranslation(hash, mode, translation){
             translation:translation})
 
         if(error){
-            console.error(error.message)
-            return null
+            console.error('Fehler ', error)
+            throw new Error(error)
         }
 
         if(data){

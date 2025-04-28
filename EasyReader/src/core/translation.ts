@@ -17,11 +17,7 @@ async function getTranslation(text: string, mode: string): Promise<string>{
     }
     //TODO: Implement error handeling(vorrübergehend)
     const aiResponse: string = await openAi.getTranslationFromAi(text)
-    if(aiResponse === 'error'){
-        return 'Es ist ein Fehler aufgetreten versuche es nochmal'
-    }
     
     return aiResponse
     
-
 }
