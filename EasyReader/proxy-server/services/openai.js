@@ -1,5 +1,5 @@
 const openai = require("openai");
-require('dotenv').config()
+
 
 
 //env vars
@@ -11,10 +11,6 @@ const client = new openai.OpenAI({ apiKey: OPENAI_API_KEY });
 
 
 async function translateParagraph(paragraph) {
-
-  if (!paragraph) {
-    throw new Error("there is no Pragraph to translate");
-  }
 
   const response = await client.chat.completions.create({
     model: "gpt-4o-mini",
