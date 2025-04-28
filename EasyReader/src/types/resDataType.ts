@@ -1,6 +1,6 @@
-export type resData =  {
-    response: string;
-  }
+export type resData = {
+  response: string;
+}
 
 export type resTranslationData = {
   translation: string

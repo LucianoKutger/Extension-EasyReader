@@ -4,8 +4,8 @@ const url = require("url");
 const express = require("express");
 const router = express.Router();
 const needle = require("needle");
-const {translateParagraph} = require("../services/openai")
-const {checkForTranslationinSupabase, postTranslation} = require("../services/supabase")
+const { translateParagraph } = require("../services/openai")
+const { checkForTranslationinSupabase, postTranslation } = require("../services/supabase")
 
 router.use(express.json());
 
@@ -25,65 +25,65 @@ router.get("/translate", async (req, res) => {
 
   } catch (error) {
 
-    res.status(500).json({ 
+    res.status(500).json({
       error: error.message ||
         'Internal Server Error'
-      });
+    });
 
   }
 });
 
 router.post("/supabase", async (req, res) => {
 
-  const {hash, mode, translation} = req.body;
+  const { hash, mode, translation } = req.body;
 
-  if(!hash){
+  if (!hash) {
 
     return res.status(400).json({
       error: 'hash is missing'
     })
   }
 
-  if(!mode){
+  if (!mode) {
 
     return res.status(400).json({
       error: 'mode is missing'
     })
   }
 
-  if(!translation){
+  if (!translation) {
 
     return res.status(400).json({
       error: 'translation is missing'
     })
   }
 
-  try{
+  try {
 
     const result = await postTranslation(hash, mode, translation)
-    res.status(200).json({response: result})
+    res.status(200).json({ response: result })
 
-  }catch(error){
+  } catch (error) {
 
-    res.status(500).json({ 
+    res.status(500).json({
       error: error.message ||
-       'Internal Server Error' 
-      })
-    
+        'Internal Server Error'
+    })
+
   }
 
 })
 
 router.get("/supabase", async (req, res) => {
-  const {hash, mode } = req.body
+  const { hash, mode } = req.body
 
-  if(!hash){
+  if (!hash) {
     return res.status(400).json({
       error: 'hash is missing'
     })
   }
 
-  if(!mode){
+  if (!mode) {
     return res.status(400).json({
       error: 'mode is missing'
     })
@@ -92,15 +92,15 @@ router.get("/supabase", async (req, res) => {
   try {
     const result = await checkForTranslationinSupabase(hash, mode)
 
-      return res.status(200).json({
-        translation: result
-      })
+    return res.status(200).json({
+      translation: result
+    })
 
   } catch (error) {
-      return res.status(500).json({ 
-        error: error.message ||
-         'Internal Server Error' 
-        })
+    return res.status(500).json({
+      error: error.message ||
+        'Internal Server Error'
+    })
   }
 })
 

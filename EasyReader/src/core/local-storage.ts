@@ -1,14 +1,20 @@
 
-export async function postTranslationIntoStorage(hash:string, translation:string) {
-    await chrome.storage.local.set({hash:translation})  
+export async function postTranslationIntoStorage(hash: string, mode: string, translation: string): Promise<boolean> {
+    try {
+        await chrome.storage.local.set({ hash: translation })
+        return true
+    } catch (error) {
+        console.error("fehler: ", error)
+        return false
+    }
 }
 
-export async function getTranslationFromStorage(hash: string): Promise<string | null>{
+export async function getTranslationFromStorage(hash: string): Promise<string | null> {
     return new Promise((resolve) => {
         chrome.storage.local.get([hash], (result) => {
-            if(result[hash] !== undefined){
+            if (result[hash] !== undefined) {
                 resolve(result[hash]);
-            }else{
+            } else {
                 resolve(null);
             }
         });

@@ -37,7 +37,7 @@ async function translateParagraph(paragraph) {
     });
 
     return response.choices[0].message.content;
-    
+
   } catch (error) {
     console.error('Fehler: ', error)
     throw error
