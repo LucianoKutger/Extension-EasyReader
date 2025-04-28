@@ -13,23 +13,13 @@ if(!SUPABASE_KEY || !SUPABASE_URL){
 const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_KEY)
 
 export async function checkForTranslationinSupabase(hash: string ,mode:string ):Promise<string | null>{
-    return new Promise(async (resolve) => {
-        const { data, error} = await supabase
-            .from('translations') 
-            .select('translation')
-            .eq('hash', hash)
-            .eq('mode', mode)
-
-            if(data){
-                if(data.length == 0){
-                    resolve(null)
-                }else{
-                    resolve(data[0].translation) 
-                }
-            }else if(error){
-                throw new Error(error.code)
-            }
-    })        
+    const { default: fetch } = await import('node-fetch');
+    
+    return fetch('http://localhost:5001/api/translation', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hash: hash, mode: mode }),
+      }).then( response => response.json() as Promise<resData>)
 }
 
 export async function postTranslation(hash:string, mode:string, translation:string):Promise<string> {

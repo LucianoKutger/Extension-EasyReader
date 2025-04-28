@@ -4,7 +4,7 @@ export async function getTranslationFromAi(paragraph: string): Promise<string> {
     const { default: fetch } = await import('node-fetch');
   
     return fetch('http://localhost:5001/api/translation', {
-      method: 'POST',
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ paragraph: paragraph }),
     })
