@@ -4,7 +4,7 @@ import * as supabase from './supabase.js'
 import * as openAi from './openAi.js'
 
 
-async function getTranslation(text: string, mode: string): Promise<string | boolean> {
+export async function getTranslation(text: string, mode: string): Promise<string | boolean> {
     const hashString: string = hashing.testToHash(text)
 
     //check Local Storage
