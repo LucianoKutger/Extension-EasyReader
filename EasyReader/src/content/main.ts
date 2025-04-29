@@ -1,6 +1,8 @@
 import { tabOnMessage, tabSendMessage } from "../types/messageType.js";
 import { HTMLtarget } from "../types/targetType.js";
 
+
+console.log("content")
 async function waitForClick(): Promise<HTMLtarget> {
     return new Promise((resolve) => {
         document.addEventListener('click', (event) => {
@@ -9,7 +11,7 @@ async function waitForClick(): Promise<HTMLtarget> {
             if (target instanceof HTMLElement) {
                 resolve({
                     target: target,
-                    text: target.innerHTML
+                    text: target.innerText
                 })
             }
         }, { once: true })
@@ -31,14 +33,14 @@ chrome.runtime.onMessage.addListener((message: tabOnMessage, sender: chrome.runt
 
 
             chrome.runtime.sendMessage({ action: "clicked", text: target.text, targetId: element.id, mode: message.mode })
-        })
+        })();
     }
 
     if (message.action === "translated") {
         if (message.targetId && message.text) {
             const element = document.getElementById(message.targetId)
             if (element) {
-                element.innerHTML = message.text
+                element.innerText = message.text
             }
 
         }

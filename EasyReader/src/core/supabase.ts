@@ -1,23 +1,12 @@
-import 'dotenv/config';
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '../../../database.types.js'
+
+
 import { resStatusData, resTranslationData } from '../types/resDataType.js'
 
 
-const SUPABASE_KEY: string | undefined = process.env.SUPABASE_KEY;
-const SUPABASE_URL: string | undefined = process.env.SUPABASE_URL
-
-if (!SUPABASE_KEY || !SUPABASE_URL) {
-    throw new Error('No SUPABASE_KEY or SUPABASE_URL found')
-}
-
-const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_KEY)
 
 export async function checkForTranslationinSupabase(hash: string, mode: string): Promise<string | null> {
-    const { default: fetch } = await import('node-fetch');
-
-    return fetch('http://localhost:5001/api/translation', {
-        method: 'GET',
+    return await fetch('http://localhost:5001/api/supabaseGet', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hash: hash, mode: mode }),
     })
@@ -33,8 +22,8 @@ export async function checkForTranslationinSupabase(hash: string, mode: string):
         })
 }
 
-export async function postTranslation(hash: string, mode: string, translation: string): Promise<string> {
-    return fetch('http://localhost:5001/api/translation', {
+export async function postTranslationInSupabase(hash: string, mode: string, translation: string): Promise<string> {
+    return fetch('http://localhost:5001/api/supabasePost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hash: hash, mode: mode, translation: translation }),

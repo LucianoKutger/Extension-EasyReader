@@ -5,7 +5,7 @@ import * as openAi from './openAi.js'
 
 
 export async function getTranslation(text: string, mode: string): Promise<string | boolean> {
-    const hashString: string = hashing.testToHash(text)
+    const hashString: string = await hashing.textToHash(text)
 
     //check Local Storage
     try {
@@ -36,7 +36,7 @@ export async function getTranslation(text: string, mode: string): Promise<string
         const aiResponse: string = await openAi.getTranslationFromAi(text)
 
         await localStorage.postTranslationIntoStorage(hashString, mode, aiResponse)
-        await supabase.postTranslation(hashString, mode, aiResponse)
+        await supabase.postTranslationInSupabase(hashString, mode, aiResponse)
 
         return aiResponse
 

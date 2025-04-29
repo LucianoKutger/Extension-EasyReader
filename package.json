@@ -2,7 +2,6 @@
   "name": "EasyReader",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "type": "module",
   "license": "AGPL-version-3.0",
   "private": false,
@@ -29,11 +28,12 @@
     "clean": "rmdir /s /q .\\EasyReader\\dist",
     "compile": "npx tsc",
     "fix-exports": "npx tsx helper/remove-exports",
-    "copy-assets": "robocopy . EasyReader\\dist /E /XD EasyReader\\src dist scripts helper proxy-server/XF tsconfig.json || exit 0",
+    "copy-assets": "robocopy . EasyReader\\dist /E /XD EasyReader\\src dist scripts helper proxy-server node_modules /XF tsconfig.json README.md || exit 0",
     "build": "npm run clean && npm run compile && npm run copy-assets && npm run fix-exports"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.317",
+    "@types/crypto-js": "^4.2.2",
     "supabase": "^2.22.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

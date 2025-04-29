@@ -6,7 +6,8 @@
         "default_popup": "EasyReader/src/popup/popup.html"
     },
     "background": {
-        "service_worker": "EasyReader/src/background/index.js"
+        "service_worker": "EasyReader/src/background/index.js",
+        "type": "module"
     },
     "permissions": [
         "scripting",

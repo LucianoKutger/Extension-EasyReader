@@ -9,7 +9,7 @@ const { checkForTranslationinSupabase, postTranslation } = require("../services/
 
 router.use(express.json());
 
-router.get("/translate", async (req, res) => {
+router.post("/aiTranslation", async (req, res) => {
   const { paragraph } = req.body;
 
   if (!paragraph) {
@@ -33,7 +33,7 @@ router.get("/translate", async (req, res) => {
   }
 });
 
-router.post("/supabase", async (req, res) => {
+router.post("/supabasePost", async (req, res) => {
 
   const { hash, mode, translation } = req.body;
 
@@ -74,7 +74,7 @@ router.post("/supabase", async (req, res) => {
 
 })
 
-router.get("/supabase", async (req, res) => {
+router.post("/supabaseGet", async (req, res) => {
   const { hash, mode } = req.body
 
   if (!hash) {

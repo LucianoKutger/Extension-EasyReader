@@ -6,20 +6,42 @@ console.log("aktiv")
 chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
     console.log(message)
     if (message.action === "wait for click") {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs[0]?.id) {
-                chrome.tabs.sendMessage(tabs[0].id, {
-                    action: "wait for click on text",
-                    mode: message.mode
-                });
+        console.log("wait for click angekommen");
 
+        chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+            const tabId = tabs[0]?.id;
+            if (!tabId) return;
 
-                sendResponse({ status: "angekommen" })
-            }
-        })
+            // Versuche zuerst, Nachricht zu schicken
+            chrome.tabs.sendMessage(tabId, {
+                action: "wait for click on text",
+                mode: message.mode
+            }, async (response) => {
+                if (chrome.runtime.lastError) {
+                    console.warn("Content Script nicht gefunden. Injektion wird versucht...", chrome.runtime.lastError.message);
 
-        return true
+                    // Dynamisch injecten
+                    await chrome.scripting.executeScript({
+                        target: { tabId },
+                        files: ["EasyReader/src/content/main.js"]
+                    });
+
+                    // Dann nochmal senden
+                    chrome.tabs.sendMessage(tabId, {
+                        action: "wait for click on text",
+                        mode: message.mode
+                    }, () => {
+                        sendResponse({ status: "nach Injektion gesendet" });
+                    });
+                } else {
+                    sendResponse({ status: "angekommen" });
+                }
+            });
+        });
+
+        return true; // Damit sendResponse asynchron funktioniert
     }
+
 
     if (message.action === "clicked") {
         (async () => {
@@ -38,6 +60,6 @@ chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.ru
                     })
                 }
             }
-        })
+        })();
     }
 })
