@@ -1,0 +1,36 @@
+import { getTranslation } from "../core/translation.js"
+import { runtimeMessage, tabSendMessage } from "../types/messageType.js"
+
+
+chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
+    if (message.action === "wait for click") {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs[0]?.id) {
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    action: "wait for click on text",
+                    mode: message.mode
+                })
+            }
+        })
+    }
+
+    if (message.action === "clicked") {
+        (async () => {
+            if (message.text) {
+                const translatedText = await getTranslation(message.text, message.mode)
+                if (translatedText) {
+                    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                        if (tabs[0]?.id) {
+                            chrome.tabs.sendMessage(tabs[0].id, {
+                                action: "translated",
+                                mode: message.mode,
+                                text: translatedText,
+                                targetId: message.targetId
+                            })
+                        }
+                    })
+                }
+            }
+        })
+    }
+})
