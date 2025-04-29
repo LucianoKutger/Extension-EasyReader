@@ -2,7 +2,7 @@ import fs from "fs";
 
 const filesToFix = [
     "EasyReader/dist/EasyReader/src/popup/popup.js",
-    "EasyReader/dist/EasyReader/sec/content/main.js"
+    "EasyReader/dist/EasyReader/src/content/main.js"
 ];
 
 filesToFix.forEach(file => {

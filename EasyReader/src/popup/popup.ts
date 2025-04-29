@@ -6,7 +6,7 @@ if (leichteSpracheButton) {
             action: 'wait for click',
             mode: "leicht"
         })
-        alert("LeichteSprache")
+
     })
 } else {
     throw new Error("there is no Button with the id 'leichteSprache'")
