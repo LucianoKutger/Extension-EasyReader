@@ -3,7 +3,7 @@
     "name": "EasyReader",
     "version": "1.0.0",
     "action": {
-        "default_popup": "./EasyReader/src/popup/popup.html"
+        "default_popup": "EasyReader/src/popup/popup.html"
     },
     "background": {
         "service_worker": "EasyReader/src/background/index.js"
@@ -23,7 +23,7 @@
                 "<all_urls>"
             ],
             "js": [
-                "./EasyReader/src/content/main.js"
+                "EasyReader/src/content/main.js"
             ]
         }
     ]
