@@ -12,32 +12,33 @@ chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.ru
             const tabId = tabs[0]?.id;
             if (!tabId) return;
 
-            // Versuche zuerst, Nachricht zu schicken
-            chrome.tabs.sendMessage(tabId, {
-                action: "wait for click on text",
-                mode: message.mode
-            }, async (response) => {
-                if (chrome.runtime.lastError) {
-                    console.warn("Content Script nicht gefunden. Injektion wird versucht...", chrome.runtime.lastError.message);
+            try {
+                // Direkt injecten
+                await chrome.scripting.executeScript({
+                    target: { tabId },
+                    files: ["EasyReader/src/content/main.js"]
+                });
 
-                    // Dynamisch injecten
-                    await chrome.scripting.executeScript({
-                        target: { tabId },
-                        files: ["EasyReader/src/content/main.js"]
-                    });
+                // Dann Nachricht senden
+                chrome.tabs.sendMessage(tabId, {
+                    action: "wait for click on text",
+                    mode: message.mode
+                }, () => {
+                    if (chrome.runtime.lastError) {
+                        console.error("Fehler beim Senden an Content Script:", chrome.runtime.lastError.message);
+                        sendResponse({ status: "Fehlgeschlagen beim Senden" });
 
-                    // Dann nochmal senden
-                    chrome.tabs.sendMessage(tabId, {
-                        action: "wait for click on text",
-                        mode: message.mode
-                    }, () => {
+                    } else {
+                        console.log("Nachricht erfolgreich an Content Script gesendet");
                         sendResponse({ status: "nach Injektion gesendet" });
-                    });
-                } else {
-                    sendResponse({ status: "angekommen" });
-                }
-            });
+                    }
+                });
+            } catch (error) {
+                console.error("Fehler beim Injektionsversuch:", error);
+                sendResponse({ status: "Fehlgeschlagen" });
+            }
         });
+
 
         return true; // Damit sendResponse asynchron funktioniert
     }
@@ -49,14 +50,17 @@ chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.ru
                 const translatedText = await getTranslation(message.text, message.mode)
                 if (translatedText) {
                     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                        if (tabs[0]?.id) {
-                            chrome.tabs.sendMessage(tabs[0].id, {
-                                action: "translated",
-                                mode: message.mode,
-                                text: translatedText,
-                                targetId: message.targetId
-                            })
-                        }
+
+                        const tabId = tabs[0]?.id;
+                        if (!tabId) return;
+
+                        chrome.tabs.sendMessage(tabId, {
+                            action: "translated",
+                            mode: message.mode,
+                            text: translatedText,
+                            targetId: message.targetId
+                        })
+
                     })
                 }
             }
