@@ -27,22 +27,64 @@ if (!(window as any).EasyReaderContentLoaded) {
         if (message.action === "wait for click on text") {
             (async () => {
                 const target = await waitForClick()
-                const element = target.target
+                const htmlElement = target.target
 
-                if (!element.id) {
-                    element.id = `generated-${Math.random().toString(36).slice(2, 11)}`
+                if (target instanceof HTMLElement) {
+                    let element
+
+                    const displayType = window.getComputedStyle(target).display
+
+                    if (displayType === "inline") {
+                        const parent = htmlElement.parentElement
+                        const grandparent = parent?.parentElement
+
+                        element = grandparent ?? parent ?? htmlElement
+
+                    } else {
+
+                        element = target.target
+
+                    }
+                    if (element.parentElement) {
+
+                        const parent = element.parentElement
+
+                        for (const child of parent.children) {
+                            if (!child.id) {
+                                child.id = `generated-${Math.random().toString(36).slice(2, 11)}`
+                            }
+
+
+
+                            chrome.runtime.sendMessage({
+                                action: "clicked",
+                                text: (child as HTMLElement).innerText,
+                                targetId: child.id,
+                                mode: message.mode
+                            })
+
+                            sendResponse({ status: "clicked_sent" });
+                        }
+                    } else {
+                        if (!element.id) {
+                            element.id = `generated-${Math.random().toString(36).slice(2, 11)}`
+                        }
+
+
+
+                        chrome.runtime.sendMessage({
+                            action: "clicked",
+                            text: target.text,
+                            targetId: element.id,
+                            mode: message.mode
+                        })
+
+                        sendResponse({ status: "clicked_sent" });
+
+                    }
                 }
 
 
-
-                chrome.runtime.sendMessage({
-                    action: "clicked",
-                    text: target.text,
-                    targetId: element.id,
-                    mode: message.mode
-                })
-
-                sendResponse({ status: "clicked_sent" });
             })();
 
             return true;
