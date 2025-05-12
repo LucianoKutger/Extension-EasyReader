@@ -29,11 +29,13 @@
     "compile": "npx tsc",
     "fix-exports": "npx tsx helper/remove-exports",
     "copy-assets": "robocopy . EasyReader\\dist /E /XD EasyReader\\src dist scripts helper proxy-server node_modules /XF tsconfig.json README.md || exit 0",
-    "build": "npm run clean && npm run compile && npm run copy-assets && npm run fix-exports"
+    "build": "npm run clean && npm run compile && npm run copy-assets && npm run fix-exports",
+    "server": "cd EasyReader/proxy-server && npm run start"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.317",
     "@types/crypto-js": "^4.2.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "supabase": "^2.22.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
@@ -41,6 +43,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
     "crypto-js": "^4.2.0",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "jsonwebtoken": "^9.0.2"
   }
 }

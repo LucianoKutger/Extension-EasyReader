@@ -5,6 +5,7 @@ if (!(window as any).EasyReaderContentLoaded) {
     (window as any).EasyReaderContentLoaded = true;
     console.log("content geladen")
 
+    let rightClickedElement: HTMLElement
 
     async function waitForClick(): Promise<HTMLtarget> {
         return new Promise((resolve) => {
@@ -21,78 +22,118 @@ if (!(window as any).EasyReaderContentLoaded) {
         })
     }
 
+    function idCheck(element: HTMLElement) {
 
+        if (!element.id) {
+
+            element.id = `generated-${Math.random().toString(36).slice(2, 11)}`
+        }
+    }
+
+    function sendMessage(action: string, text: string, targetId: string, mode: string) {
+
+        chrome.runtime.sendMessage({
+            action: action,
+            text: text,
+            targetId: targetId,
+            mode: mode
+        })
+    }
+
+    function parentCheck(htmlElement: HTMLElement): HTMLElement {
+
+        const displayType = window.getComputedStyle(htmlElement).display
+
+        if (displayType === "inline") {
+            const parent = htmlElement.parentElement
+
+            return parent ?? htmlElement
+
+        } else {
+
+            return htmlElement
+
+        }
+    }
+
+    /*document.addEventListener("contextmenu", (element) => {
+        const target = (element.target) as HTMLElement
+
+        console.log(target)
+
+        sendMessage("right click", target.innerHTML, target.id, "leicht")
+    })*/
+
+    document.addEventListener("contextmenu", (event) => {
+        const htmlElement = event.target as HTMLElement
+
+        if (htmlElement instanceof HTMLElement) {
+
+
+            const htmlElement = event.target as HTMLElement
+
+            if (htmlElement instanceof HTMLElement) {
+
+                rightClickedElement = parentCheck(htmlElement)
+
+            }
+
+        }
+    })
 
     chrome.runtime.onMessage.addListener((message: tabOnMessage, sender: chrome.runtime.MessageSender, sendResponse: (response: any) => void) => {
-        if (message.action === "wait for click on text") {
+        if (message.action === "approved") {
+
+            sendResponse("transmitted");
+
             (async () => {
-                const target = await waitForClick()
-                const htmlElement = target.target
 
-                if (target instanceof HTMLElement) {
-                    let element
+                const htmlElement: HTMLElement = rightClickedElement
 
-                    const displayType = window.getComputedStyle(target).display
+                if (htmlElement instanceof HTMLElement) {
 
-                    if (displayType === "inline") {
+                    if (htmlElement.parentElement) {
+
                         const parent = htmlElement.parentElement
-                        const grandparent = parent?.parentElement
-
-                        element = grandparent ?? parent ?? htmlElement
-
-                    } else {
-
-                        element = target.target
-
-                    }
-                    if (element.parentElement) {
-
-                        const parent = element.parentElement
 
                         for (const child of parent.children) {
-                            if (!child.id) {
-                                child.id = `generated-${Math.random().toString(36).slice(2, 11)}`
+                            if ((child as HTMLElement).innerText) {
+
+                                idCheck(child as HTMLElement)
+
+                                sendMessage
+                                sendMessage("approved element", (child as HTMLElement).innerText, child.id, message.mode)
                             }
 
-
-
-                            chrome.runtime.sendMessage({
-                                action: "clicked",
-                                text: (child as HTMLElement).innerText,
-                                targetId: child.id,
-                                mode: message.mode
-                            })
-
-                            sendResponse({ status: "clicked_sent" });
                         }
                     } else {
-                        if (!element.id) {
-                            element.id = `generated-${Math.random().toString(36).slice(2, 11)}`
+
+                        if (htmlElement.innerText) {
+
+                            idCheck(htmlElement)
+
+                            sendMessage("approved element", htmlElement.innerText, htmlElement.id, message.mode)
+
                         }
 
-
-
-                        chrome.runtime.sendMessage({
-                            action: "clicked",
-                            text: target.text,
-                            targetId: element.id,
-                            mode: message.mode
-                        })
-
-                        sendResponse({ status: "clicked_sent" });
-
                     }
+
+                } else {
+                    console.log("kein html element")
                 }
 
 
             })();
 
-            return true;
+            return false;
         }
 
         if (message.action === "translated") {
+            console.log("translation erhalten");
             if (message.targetId && message.text) {
                 const element = document.getElementById(message.targetId)
+                console.log(message)
+                console.log(element)
                 if (element) {
                     element.innerText = message.text
                 }
