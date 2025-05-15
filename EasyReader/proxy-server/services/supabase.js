@@ -29,6 +29,8 @@ function createJWT() {
 
 const token = createJWT()
 
+
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
     global: {
         headers: {
