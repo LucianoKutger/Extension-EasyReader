@@ -6,12 +6,16 @@ const PORT = process.env.PORT || 5001
 
 const app = express()
 
+const { authenticateProjectJWT } = require('./services/jwtAuth');
 
-//Enable cors
+const proxyRoutes = require('./routes');
+
+
 app.use(cors())
 
-//Routes
-app.use('/api', require('./routes'))
+app.use(express.json());
+
+app.use('/api', authenticateProjectJWT, proxyRoutes);
 
 
 app.listen(PORT, () => console.log(`Server running on Port: ${PORT}`))

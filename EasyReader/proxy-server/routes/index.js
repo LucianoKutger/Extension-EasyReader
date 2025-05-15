@@ -1,11 +1,10 @@
-const openai = require("openai");
+require("dotenv").config();
 
-const url = require("url");
 const express = require("express");
 const router = express.Router();
-const needle = require("needle");
 const { translateParagraph } = require("../services/openai")
 const { checkForTranslationinSupabase, postTranslation } = require("../services/supabase")
+
 
 router.use(express.json());
 

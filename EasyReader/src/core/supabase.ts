@@ -5,36 +5,58 @@ import { resStatusData, resTranslationData } from '../types/resDataType.js'
 
 
 export async function checkForTranslationinSupabase(hash: string, mode: string): Promise<string | null> {
-    return await fetch('http://localhost:5001/api/supabaseGet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hash: hash, mode: mode }),
-    })
-        .then(response => response.json() as Promise<resTranslationData>)
-        .then(resTranslationData => {
-            if (!resTranslationData) {
-                throw new Error("There is no Transltion property in the response")
-            }
+    try {
+        const response = await fetch('http://localhost:5001/api/supabaseGet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ hash, mode }),
+        });
 
-            const translation = resTranslationData.translation
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP-Fehler ${response.status}: ${errorText}`);
+        }
 
-            return translation
-        })
+        const resTranslationData = await response.json() as { translation: string | null };
+
+        if (!resTranslationData || typeof resTranslationData.translation === 'undefined') {
+            throw new Error("Es fehlt die 'translation'-Eigenschaft in der Server-Antwort");
+        }
+
+        return resTranslationData.translation;
+
+    } catch (error) {
+        console.error("Fehler beim Abrufen der Übersetzung:", error);
+        throw error; // optional: throw new Error("Übersetzung konnte nicht geladen werden");
+    }
 }
 
-export async function postTranslationInSupabase(hash: string, mode: string, translation: string): Promise<string> {
-    return fetch('http://localhost:5001/api/supabasePost', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hash: hash, mode: mode, translation: translation }),
-    })
-        .then(response => response.json() as Promise<resStatusData>)
-        .then(resStatusData => {
-            if (!resStatusData) {
-                throw new Error("There is no status in the response")
-            }
-            const status = resStatusData.status
+export async function postTranslationToSupabase(hash: string, mode: string, translation: string): Promise<string> {
+    try {
+        const response = await fetch('http://localhost:5001/api/supabasePost', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hash, mode, translation }),
+        });
 
-            return status
-        })
+        // Prüfe HTTP-Statuscode
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP-Fehler ${response.status}: ${errorText}`);
+        }
+
+        const resStatusData = await response.json() as { status: string };
+
+        if (!resStatusData || typeof resStatusData.status === 'undefined') {
+            throw new Error("Es fehlt die 'status'-Eigenschaft in der Server-Antwort");
+        }
+
+        return resStatusData.status;
+
+    } catch (error) {
+        console.error("Fehler beim Posten der Übersetzung:", error);
+        throw error;
+    }
 }

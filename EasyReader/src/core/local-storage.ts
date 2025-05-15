@@ -38,6 +38,8 @@ export async function localStorageCron() {
         const item = fullStorage[key]
 
         if (item?.createdAt && now - item.createdAt > week) {
+            console.log("Entferne veralteten Eintrag:", key);
+
             await chrome.storage.local.remove(key)
         }
     }

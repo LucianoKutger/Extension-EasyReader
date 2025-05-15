@@ -23,6 +23,7 @@ export async function getTranslation(text: string, mode: string): Promise<string
         const supabaseCheck: string | null = await supabase.checkForTranslationinSupabase(hashString, mode)
 
         if (supabaseCheck !== null) {
+            await localStorage.postTranslationIntoStorage(hashString, mode, supabaseCheck)
             return supabaseCheck
         }
     } catch (error) {
@@ -36,7 +37,7 @@ export async function getTranslation(text: string, mode: string): Promise<string
         const aiResponse: string = await openAi.getTranslationFromAi(text)
 
         await localStorage.postTranslationIntoStorage(hashString, mode, aiResponse)
-        await supabase.postTranslationInSupabase(hashString, mode, aiResponse)
+        await supabase.postTranslationToSupabase(hashString, mode, aiResponse)
 
         return aiResponse
 

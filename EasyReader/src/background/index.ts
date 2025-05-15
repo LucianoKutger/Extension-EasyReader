@@ -1,14 +1,19 @@
-import { getTranslation } from "../core/translation.js"
 import { runtimeMessage } from "../types/messageType.js"
 import * as localStorage from "../core/local-storage.js"
 
+import { getTranslation } from "../core/translation.js"
 console.log("aktiv")
 
-let storedTarget: runtimeMessage | null = null
+localStorage.localStorageCron();
 
-/*
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.alarms.create("localStorageCron", { periodInMinutes: 1440 })
+    chrome.contextMenus.create({
+        id: "easyReader",
+        title: "in Leichte Sprache Übersetzen",
+        contexts: ["all"]
+    })
+
+    chrome.alarms.create("localStorageCron", { periodInMinutes: 1 })
 })
 
 chrome.alarms.onAlarm.addListener((alarm) => {
@@ -17,15 +22,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         localStorage.localStorageCron();
     }
 })
-*/
 
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.contextMenus.create({
-        id: "easyReader",
-        title: "in Leichte Sprache Übersetzen",
-        contexts: ["all"]
-    })
-})
 
 chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
     console.log(message)
