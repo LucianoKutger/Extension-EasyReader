@@ -6,12 +6,13 @@ import * as openAi from './openAi.js'
 
 export async function getTranslation(text: string, mode: string): Promise<string | boolean> {
     const hashString: string = await hashing.textToHash(text)
+    let beginMarker = "In Leichte Sprache Uebersetzt:\n"
 
     //check Local Storage
     try {
         const localStorageCheck: string | null = await localStorage.getTranslationFromStorage(hashString)
         if (localStorageCheck !== null) {
-            return localStorageCheck
+            return beginMarker + localStorageCheck
         }
 
     } catch (error) {
@@ -24,7 +25,7 @@ export async function getTranslation(text: string, mode: string): Promise<string
 
         if (supabaseCheck !== null) {
             await localStorage.postTranslationIntoStorage(hashString, mode, supabaseCheck)
-            return supabaseCheck
+            return beginMarker + supabaseCheck
         }
     } catch (error) {
         console.error("Database error:", error)
@@ -39,7 +40,7 @@ export async function getTranslation(text: string, mode: string): Promise<string
         await localStorage.postTranslationIntoStorage(hashString, mode, aiResponse)
         await supabase.postTranslationToSupabase(hashString, mode, aiResponse)
 
-        return aiResponse
+        return beginMarker + aiResponse
 
     } catch (error) {
         console.error("AI error:", error)

@@ -6,6 +6,8 @@ console.log("aktiv")
 
 localStorage.localStorageCron();
 
+
+
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "easyReader",
@@ -22,6 +24,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         localStorage.localStorageCron();
     }
 })
+
 
 
 chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
@@ -99,14 +102,35 @@ chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.ru
 
 chrome.contextMenus.onClicked.addListener((info) => {
     if (info.menuItemId === "easyReader") {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
             const tabId = tabs[0]?.id;
             if (!tabId) return;
+            try {
+                await chrome.scripting.executeScript({
+                    target: { tabId },
+                    files: ["EasyReader/src/content/main.js"]
+                });
 
-            chrome.tabs.sendMessage(tabId, {
-                action: "approved",
-                mode: "leicht"
-            });
+                chrome.tabs.sendMessage(tabId, {
+                    action: "approved",
+                    mode: "leicht"
+                }, () => {
+
+                    if (chrome.runtime.lastError) {
+                        console.error("Fehler beim Senden an Content Script:", chrome.runtime.lastError.message);
+
+
+                    } else {
+
+                        console.log("Nachricht erfolgreich an Content Script gesendet");
+
+                    }
+                });
+            } catch (e) {
+                throw e
+            }
+
+
         });
 
 
