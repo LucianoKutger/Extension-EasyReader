@@ -7,19 +7,8 @@ if (!(window as any).EasyReaderContentLoaded) {
 
     let rightClickedElement: HTMLElement
 
-    async function waitForClick(): Promise<HTMLtarget> {
-        return new Promise((resolve) => {
-            document.addEventListener('click', (event) => {
-                const target = event.target;
-
-                if (target instanceof HTMLElement) {
-                    resolve({
-                        target: target,
-                        text: target.innerText
-                    })
-                }
-            }, { once: true })
-        })
+    function hTagCheck(element: HTMLElement) {
+        return /^H[1-6]$/.test(element.tagName);
     }
 
     function idCheck(element: HTMLElement) {
@@ -56,14 +45,6 @@ if (!(window as any).EasyReaderContentLoaded) {
         }
     }
 
-    /*document.addEventListener("contextmenu", (element) => {
-        const target = (element.target) as HTMLElement
-
-        console.log(target)
-
-        sendMessage("right click", target.innerHTML, target.id, "leicht")
-    })*/
-
     document.addEventListener("contextmenu", (event) => {
         const htmlElement = event.target as HTMLElement
 
@@ -82,6 +63,11 @@ if (!(window as any).EasyReaderContentLoaded) {
     })
 
     chrome.runtime.onMessage.addListener((message: tabOnMessage, sender: chrome.runtime.MessageSender, sendResponse: (response: any) => void) => {
+        if (message.action === "active") {
+            console.log("Content Script: Aktiv erhalten");
+            sendResponse({ status: "ready" });
+        }
+
         if (message.action === "approved") {
 
             sendResponse("transmitted");
@@ -97,18 +83,18 @@ if (!(window as any).EasyReaderContentLoaded) {
                         const parent = htmlElement.parentElement
 
                         for (const child of parent.children) {
-                            if ((child as HTMLElement).innerText) {
+                            if ((child as HTMLElement).innerText && !hTagCheck(child as HTMLElement)) {
 
                                 idCheck(child as HTMLElement)
 
-                                sendMessage
+
                                 sendMessage("approved element", (child as HTMLElement).innerText, child.id, message.mode)
                             }
 
                         }
                     } else {
 
-                        if (htmlElement.innerText) {
+                        if (htmlElement.innerText && !hTagCheck(htmlElement)) {
 
                             idCheck(htmlElement)
 
@@ -135,10 +121,14 @@ if (!(window as any).EasyReaderContentLoaded) {
                 console.log(message)
                 console.log(element)
                 if (element) {
-                    element.innerText = message.text
+                    element.innerHTML = message.text
                 }
 
             }
+        }
+
+        if (message.action === "reload") {
+            location.reload();
         }
     })
 }

@@ -20,7 +20,7 @@ router.post("/aiTranslation", async (req, res) => {
   try {
     const result = await translateParagraph(paragraph);
 
-    res.status(200).json({ response: result });
+    res.status(200).json({ response: result, status: 'success' });
 
   } catch (error) {
 
@@ -60,7 +60,7 @@ router.post("/supabasePost", async (req, res) => {
   try {
 
     const result = await postTranslation(hash, mode, translation)
-    res.status(200).json({ response: result })
+    res.status(200).json({ response: result, status: 'success' })
 
   } catch (error) {
 
@@ -92,7 +92,7 @@ router.post("/supabaseGet", async (req, res) => {
     const result = await checkForTranslationinSupabase(hash, mode)
 
     return res.status(200).json({
-      translation: result
+      translation: result, status: 'success',
     })
 
   } catch (error) {

@@ -1,8 +1,14 @@
+
+
 export async function getTranslationFromAi(paragraph: string): Promise<string> {
+
+
   try {
     const response = await fetch('http://localhost:5001/api/aiTranslation', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ paragraph }),
     });
 

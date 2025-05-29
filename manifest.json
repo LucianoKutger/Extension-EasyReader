@@ -2,8 +2,13 @@
     "manifest_version": 3,
     "name": "EasyReader",
     "version": "1.0.0",
+    "description": "Übersetzt texte in Einfache Sprache",
+    "icons": {
+        "128": "EasyReader/public/icon.png"
+    },
     "action": {
-        "default_popup": "EasyReader/src/popup/popup.html"
+        "default_popup": "EasyReader/src/popup/popup.html",
+        "default_icon": "EasyReader/public/icon.png"
     },
     "background": {
         "service_worker": "EasyReader/src/background/index.js",

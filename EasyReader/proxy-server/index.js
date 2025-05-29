@@ -15,7 +15,7 @@ app.use(cors())
 
 app.use(express.json());
 
-app.use('/api', authenticateProjectJWT, proxyRoutes);
+app.use('/api', proxyRoutes);
 
 
 app.listen(PORT, () => console.log(`Server running on Port: ${PORT}`))

@@ -6,7 +6,7 @@ import * as openAi from './openAi.js'
 
 export async function getTranslation(text: string, mode: string): Promise<string | boolean> {
     const hashString: string = await hashing.textToHash(text)
-    let beginMarker = "In Leichte Sprache Uebersetzt:\n"
+    let beginMarker = "<b>In Einfache Sprache Übersetzt: </b>"
 
     //check Local Storage
     try {

@@ -1,10 +1,7 @@
 
 
-import { resStatusData, resTranslationData } from '../types/resDataType.js'
-
-
-
 export async function checkForTranslationinSupabase(hash: string, mode: string): Promise<string | null> {
+
     try {
         const response = await fetch('http://localhost:5001/api/supabaseGet', {
             method: 'POST',
@@ -34,10 +31,15 @@ export async function checkForTranslationinSupabase(hash: string, mode: string):
 }
 
 export async function postTranslationToSupabase(hash: string, mode: string, translation: string): Promise<string> {
+
+
     try {
         const response = await fetch('http://localhost:5001/api/supabasePost', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json'
+
+            },
             body: JSON.stringify({ hash, mode, translation }),
         });
 
