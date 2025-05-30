@@ -23,7 +23,7 @@ export async function getTranslationFromAi(paragraph: string): Promise<string> {
       throw new Error('Die API-Antwort enthält kein gültiges `response`-Feld');
     }
 
-    return resData.response.replace(/\\n/g, '\n');
+    return resData.response
 
   } catch (error) {
     console.error('Fehler beim Abrufen der Übersetzung von GPT:', error);
