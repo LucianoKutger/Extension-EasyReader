@@ -85,10 +85,11 @@ if (!(window as any).EasyReaderContentLoaded) {
                         for (const child of parent.children) {
                             if ((child as HTMLElement).innerText && !hTagCheck(child as HTMLElement)) {
 
-                                idCheck(child as HTMLElement)
+                                idCheck(child as HTMLElement);
 
+                                sendMessage("approved element", (child as HTMLElement).innerText, child.id, message.mode);
 
-                                sendMessage("approved element", (child as HTMLElement).innerText, child.id, message.mode)
+                                (child as HTMLElement).innerHTML = "<b>Text wird übersetzt</b>" + (child as HTMLElement).innerText
                             }
 
                         }
@@ -99,6 +100,8 @@ if (!(window as any).EasyReaderContentLoaded) {
                             idCheck(htmlElement)
 
                             sendMessage("approved element", htmlElement.innerText, htmlElement.id, message.mode)
+
+                            htmlElement.innerHTML = "<b>Text wird übersetzt</b>" + htmlElement.innerText;
 
                         }
 

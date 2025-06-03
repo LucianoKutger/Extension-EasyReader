@@ -6,16 +6,15 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Build-Output (Dist Ordner)
-EasyReader/dist/
-EasyReader/proxy-server/dist/
+dist/
 
 # Environment Files
 .env
 .env.local
 .env.production
 .env.development
-EasyReader/.env
-EasyReader/proxy-server/.env
+.env
+
 
 # VSCode Settings
 .vscode/
