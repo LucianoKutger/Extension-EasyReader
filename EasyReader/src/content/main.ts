@@ -89,7 +89,7 @@ if (!(window as any).EasyReaderContentLoaded) {
 
                                 sendMessage("approved element", (child as HTMLElement).innerText, child.id, message.mode);
 
-                                (child as HTMLElement).innerHTML = "<b>Text wird übersetzt</b>" + (child as HTMLElement).innerText
+                                (child as HTMLElement).innerHTML = "<b>Text wird übersetzt: </b>" + (child as HTMLElement).innerText
                             }
 
                         }
@@ -101,7 +101,7 @@ if (!(window as any).EasyReaderContentLoaded) {
 
                             sendMessage("approved element", htmlElement.innerText, htmlElement.id, message.mode)
 
-                            htmlElement.innerHTML = "<b>Text wird übersetzt</b>" + htmlElement.innerText;
+                            htmlElement.innerHTML = "<b>Text wird übersetzt: </b>" + htmlElement.innerText;
 
                         }
 
