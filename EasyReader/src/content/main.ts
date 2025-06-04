@@ -122,24 +122,25 @@ if (!(window as any).EasyReaderContentLoaded) {
         if (message.action === "translated") {
             if (message.targetId && message.text) {
                 const element = document.getElementById(message.targetId)
+                console.log(message)
 
                 if (message.parentId) {
                     const parent = document.getElementById(message.parentId)
                     const bold = document.createElement('b')
-
+                    console.log("hier")
                     bold.textContent = "In Einfache Sprache Übersetzt: "
 
                     parent?.appendChild(bold)
+
+                    if (element) {
+                        element.innerHTML = message.text;
+                    }
+
                 } else {
                     if (element) {
                         element.innerHTML = "<b>In Einfache Sprache Übersetzt: </b>" + message.text
                     }
                 }
-
-                if (element) {
-                    element.innerHTML = message.text
-                }
-
             }
         }
 

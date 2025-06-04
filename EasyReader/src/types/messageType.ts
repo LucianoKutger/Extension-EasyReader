@@ -3,6 +3,7 @@ export type runtimeMessage = {
     mode: string
     targetId?: string
     text?: string
+    parentId: string
 }
 
 export type tabOnMessage = {
