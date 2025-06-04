@@ -1,7 +1,7 @@
 import { runtimeMessage } from "../types/messageType.js"
 import * as localStorage from "../core/local-storage.js"
 import { getTranslation } from "../core/translation.js"
-console.log("aktiv")
+
 
 localStorage.localStorageCron();
 

@@ -19,12 +19,13 @@ if (!(window as any).EasyReaderContentLoaded) {
         }
     }
 
-    function sendMessage(action: string, text: string, targetId: string, mode: string) {
+    function sendMessage(action: string, text: string, targetId: string, parentId: string, mode: string) {
 
         chrome.runtime.sendMessage({
             action: action,
             text: text,
             targetId: targetId,
+            parentId: parentId,
             mode: mode
         })
     }
@@ -81,13 +82,14 @@ if (!(window as any).EasyReaderContentLoaded) {
                     if (htmlElement.parentElement) {
 
                         const parent = htmlElement.parentElement
+                        idCheck(parent)
 
                         for (const child of parent.children) {
                             if ((child as HTMLElement).innerText && !hTagCheck(child as HTMLElement)) {
 
                                 idCheck(child as HTMLElement);
 
-                                sendMessage("approved element", (child as HTMLElement).innerHTML, child.id, message.mode);
+                                sendMessage("approved element", (child as HTMLElement).innerHTML, child.id, parent.id, message.mode);
 
                                 (child as HTMLElement).innerHTML = "<b>Text wird übersetzt: </b>" + (child as HTMLElement).innerText
                             }
@@ -99,7 +101,7 @@ if (!(window as any).EasyReaderContentLoaded) {
 
                             idCheck(htmlElement)
 
-                            sendMessage("approved element", htmlElement.innerHTML, htmlElement.id, message.mode)
+                            sendMessage("approved element", htmlElement.innerHTML, htmlElement.id, "", message.mode)
 
                             htmlElement.innerHTML = "<b>Text wird übersetzt: </b>" + htmlElement.innerText;
 
@@ -118,11 +120,22 @@ if (!(window as any).EasyReaderContentLoaded) {
         }
 
         if (message.action === "translated") {
-            console.log("translation erhalten");
             if (message.targetId && message.text) {
                 const element = document.getElementById(message.targetId)
-                console.log(message)
-                console.log(element)
+
+                if (message.parentId) {
+                    const parent = document.getElementById(message.parentId)
+                    const bold = document.createElement('b')
+
+                    bold.textContent = "In Einfache Sprache Übersetzt: "
+
+                    parent?.appendChild(bold)
+                } else {
+                    if (element) {
+                        element.innerHTML = "<b>In Einfache Sprache Übersetzt: </b>" + message.text
+                    }
+                }
+
                 if (element) {
                     element.innerHTML = message.text
                 }

@@ -8,6 +8,7 @@ export type runtimeMessage = {
 export type tabOnMessage = {
     action: string
     mode: string
+    parentId: string
     targetId?: string
     text?: string
 }
