@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "EasyReader",
+    "name": "Jetzt.Mal.Einfach",
     "version": "1.0.0",
     "description": "Übersetzt texte in Einfache Sprache",
     "icons": {
@@ -32,6 +32,17 @@
             ],
             "js": [
                 "EasyReader/src/content/main.js"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "EasyReader/src/core/sanitization.js",
+                "EasyReader/vendor/purify.es.mjs"
+            ],
+            "matches": [
+                "<all_urls>"
             ]
         }
     ]

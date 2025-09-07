@@ -4,18 +4,19 @@ import * as supabase from './supabase.js'
 import * as openAi from './openAi.js'
 
 
-export async function getTranslation(text: string, mode: string): Promise<string | boolean> {
+export async function getTranslation(text: string, mode: string): Promise<string> {
     const hashString: string = await hashing.textToHash(text)
 
     //check Local Storage
     try {
         const localStorageCheck: string | null = await localStorage.getTranslationFromStorage(hashString)
         if (localStorageCheck !== null) {
+
             return localStorageCheck
         }
 
     } catch (error) {
-        console.error("Local Storage error:", error)
+        throw error
     }
 
     //check Supabase
@@ -27,7 +28,7 @@ export async function getTranslation(text: string, mode: string): Promise<string
             return supabaseCheck
         }
     } catch (error) {
-        console.error("Database error:", error)
+        throw error
     }
 
     //TODO: Implement error handeling(vorrübergehend)
@@ -43,7 +44,8 @@ export async function getTranslation(text: string, mode: string): Promise<string
 
     } catch (error) {
         console.error("AI error:", error)
-        return false
+        //TODO: Error handeling
+        throw error
     }
 }
 
