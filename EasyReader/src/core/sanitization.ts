@@ -4,6 +4,13 @@ import createDOMPurify from "../../vendor/purify.es.mjs";
 
 const DOMPurify = createDOMPurify(window);
 
+/**
+ * Basis-Konfiguration für das Sanitizing:
+ * - verbietet aktive/unsichere Tags
+ * - erlaubt keine unbekannten Protokolle
+ * - liefert standardmäßig einen String zurück (RETURN_DOM:false)
+ */
+
 export const sanitizingConfig = {
     FORBID_TAGS: [
         'script', 'noscript', 'iframe', 'object', 'embed', 'applet',
@@ -17,6 +24,10 @@ export const sanitizingConfig = {
     SANITIZE_DOM: true
 };
 
+/**
+ * Whitelist erlaubter CSS-Eigenschaften für Inline-Styles.
+ * (Nur Darstellung; keine positions-/filter-basierten Tricks.)
+ */
 export const ALLOWED_CSS = new Set([
     'color', 'background-color', 'font-weight', 'font-style', 'text-decoration',
     'text-align', 'font-size', 'font-family', 'white-space', 'line-height', 'letter-spacing',
@@ -25,6 +36,11 @@ export const ALLOWED_CSS = new Set([
     'border', 'border-width', 'border-style', 'border-color', 'border-radius', 'display'
 ]);
 
+/**
+ * Hook: Attribute bei der Sanitization gezielt einschränken.
+ * - style: nur erlaubte CSS-Props, keine url()/expression()/moz-binding
+ * - href/src/action: nur sichere Protokolle/relative Pfade/Anker
+ */
 DOMPurify.addHook('uponSanitizeAttribute', (element: any, attr: any) => {
     const attrName = attr.attrName
     const attrValue = (attr.attrValue || '').trim();
@@ -64,12 +80,22 @@ DOMPurify.addHook('uponSanitizeAttribute', (element: any, attr: any) => {
     }
 });
 
+/**
+ * Prüft, ob der HTML-String ausschließlich aus <td>/<th>-Zellen besteht.
+ * (Kommentare werden vorab entfernt.)
+ */
 function checkForCell(html: string): boolean {
     const stripped = html.replace(/<!--[\s\S]*?-->/g, '');
 
     return /^(?:\s*<(?:td|th)\b[^>]*>[\s\S]*?<\/(?:td|th)>\s*)+$/i.test(stripped);
 }
 
+/**
+ * Sanitizer-Entry-Point:
+ * - Spezialfall Tabellenzellen: Zellen in minimale gültige Table-Struktur einbetten,
+ *   damit DOMPurify korrekt validiert; danach innerHTML der <tr> zurückgeben.
+ * - Sonst: normaler String-Sanitize-Durchlauf.
+ */
 export function sanitizeHTML(dirtyElement: string): string {
     const wrapped = checkForCell(dirtyElement)
         ? `<table><tbody><tr>${dirtyElement}</tr></tbody></table>`

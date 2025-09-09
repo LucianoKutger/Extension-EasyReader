@@ -31,7 +31,7 @@ export async function getTranslation(text: string, mode: string): Promise<string
         throw error
     }
 
-    //TODO: Implement error handeling(vorrübergehend)
+
     //Translate with AI
     try {
 
@@ -44,7 +44,7 @@ export async function getTranslation(text: string, mode: string): Promise<string
 
     } catch (error) {
         console.error("AI error:", error)
-        //TODO: Error handeling
+
         throw error
     }
 }

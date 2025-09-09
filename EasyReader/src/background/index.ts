@@ -2,9 +2,14 @@ import { runtimeMessage } from "../types/messageType.js"
 import * as localStorage from "../core/local-storage.js"
 import { getTranslation } from "../core/translation.js"
 
-
+// Periodischer Cleanup/Rotation lokaler Caches/Einträge
 localStorage.localStorageCron();
 
+
+/**
+ * Versieht ein Promise mit Timeout.
+ * Bricht nach `ms` mit `timeoutError` ab, wenn keine Antwort kam.
+ */
 function translationTimeout(promise: Promise<any>, ms: number, timeoutError: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
         const timer = setTimeout(() => reject(new Error(timeoutError)), ms)
@@ -20,6 +25,11 @@ function translationTimeout(promise: Promise<any>, ms: number, timeoutError: str
     })
 }
 
+/**
+ * Startet den Übersetzungsprozess im aktiven Tab:
+ * 1) Health-Check ("active")
+ * 2) Freigabe ("approved") → Content Script sammelt DOM-Teile und sendet zurück.
+ */
 function startTranslation(tabId: number) {
     chrome.tabs.sendMessage(tabId, { action: "active" }, (response) => {
         if (chrome.runtime.lastError) {
@@ -31,7 +41,7 @@ function startTranslation(tabId: number) {
 
             chrome.tabs.sendMessage(tabId, {
                 action: "approved",
-                mode: "leicht"
+                mode: "einfach"
             }, () => {
 
                 if (chrome.runtime.lastError) {
@@ -52,6 +62,7 @@ function startTranslation(tabId: number) {
 
 
 chrome.runtime.onInstalled.addListener(() => {
+    // Kontextmenüeintrag
     chrome.contextMenus.create({
         id: "easyReader",
         title: "In einfache Sprache übersetzen",
@@ -60,7 +71,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
     chrome.alarms.create("localStorageCron", { periodInMinutes: 1 })
 
-
+    // Bestehende Tabs initial mit Content Script ausstatten (nur http/https)
     chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
             if (tab.id && tab.url?.startsWith("http")) {
@@ -78,6 +89,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 })
 
+// Cron: lokale Aufräumarbeiten / TTL-Checks etc.
 chrome.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === "localStorageCron") {
 
@@ -86,7 +98,12 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 })
 
 
-
+/**
+ * Zentrale Message-Verarbeitung vom Content Script:
+ * - "approved element": Text übersetzen (mit Timeout/Fehlerpfad)
+ * - "reload": Seite neu laden
+ * - "retry": Übersetzungsflow erneut starten
+ */
 chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
 
 
@@ -99,21 +116,22 @@ chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.ru
                 let translatedText: string | undefined
                 //TODO: try catch für error handeling
                 try {
-
+                    // Übersetzung mit 10s Timeout absichern
                     translatedText = await translationTimeout(
                         getTranslation(message.text, message.mode),
                         10000,
                         "Timemout")
 
                 } catch (error) {
-
+                    // Fehler an Content Script melden und Original anzeigen lassen
                     chrome.tabs.sendMessage(tabId, {
                         action: "error",
                         mode: message.mode,
-                        originalText: message.parentElement ? message.parentElement : message.text,
+                        originalText: message.text,
                         error: (error as Error).message,
                         targetId: message.targetId,
-                        parentId: message.parentId
+                        parentId: message.parentId,
+                        parentElement: message.parentElement
                     });
 
                     return;
@@ -121,6 +139,7 @@ chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.ru
 
 
                 if (translatedText) {
+                    // Ergebnis an denselben Tab zurückschicken
                     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
                         chrome.tabs.sendMessage(tabId, {
@@ -142,6 +161,7 @@ chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.ru
     }
 
     if (message.action === "reload") {
+        // Hartes Reload des aktiven Tabs (vom Content Script angefordert)
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const tabId = tabs[0]?.id;
             if (!tabId) return;
@@ -155,13 +175,19 @@ chrome.runtime.onMessage.addListener((message: runtimeMessage, sender: chrome.ru
 
     if (message.action === "retry" && sender.tab?.id) {
 
+        // Wiederhole den Genehmigungs-/Übersetzungsflow
+
         startTranslation(sender.tab.id);
     }
 
 
 })
 
-
+/**
+ * Kontextmenü-Handler:
+ * - injiziert Content Script (falls noch nicht vorhanden)
+ * - stößt anschließend die Übersetzung an
+ */
 chrome.contextMenus.onClicked.addListener((info) => {
 
     if (info.menuItemId === "easyReader") {
@@ -177,6 +203,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
                 startTranslation(tabId)
 
             } catch (e) {
+                // Hier bewusst durchreichen: sichtbar im Service Worker Log
                 throw e
             }
 

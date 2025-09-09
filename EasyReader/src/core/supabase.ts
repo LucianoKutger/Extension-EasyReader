@@ -26,7 +26,7 @@ export async function checkForTranslationinSupabase(hash: string, mode: string):
 
     } catch (error) {
         console.error("Fehler beim Abrufen der Übersetzung:", error);
-        throw error; // optional: throw new Error("Übersetzung konnte nicht geladen werden");
+        throw error;
     }
 }
 
